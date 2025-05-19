@@ -1,0 +1,14 @@
+pyquaternion==0.9.9
+PyYAML==6.0.1
+rospkg==1.6.0
+pexpect==4.9.0
+mujoco==2.3.7
+dm-control==1.0.14
+opencv-python==4.11.0.86
+matplotlib==3.9.0
+einops==0.8.1
+packaging==24.1
+h5py==3.13.0
+ipython==8.25.0
+wandb==0.19.11
+diffusers==0.33.1
