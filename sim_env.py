@@ -515,6 +515,16 @@ class BimanualViperXTask(base.Task):
 
             obs['flows'][cam] = flow
             self.prev_image[cam] = cur_img.copy()
+            flow_color = flow_to_color(flow)  # See helper function below
+            cv2.imwrite(f'flow_visualizations/{cam}_flow_color.png', flow_color)
+
+            # Method 2: Save horizontal and vertical components separately
+            plt.imsave(f'flow_visualizations/{cam}_flow_x.png', flow[..., 0], cmap='coolwarm')
+            plt.imsave(f'flow_visualizations/{cam}_flow_y.png', flow[..., 1], cmap='coolwarm')
+
+            # Method 3: Save raw flow data as .npy file for later processing
+            np.save(f'flow_visualizations/{cam}_flow.npy', flow)
+
         # ## Optical Flow
         # obs['flows'] = {}
         # for cam, cur_img in obs['images'].items():
@@ -537,6 +547,18 @@ class BimanualViperXTask(base.Task):
     def get_reward(self, physics):
         # return whether left gripper is holding the box
         raise NotImplementedError
+    def flow_to_color(flow):
+        """
+        Convert optical flow to RGB image using color coding
+        """
+        hsv = np.zeros((flow.shape[0], flow.shape[1], 3), dtype=np.uint8)
+        hsv[..., 1] = 255
+        
+        mag, ang = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+        hsv[..., 0] = ang * 180 / np.pi / 2
+        hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
+        flow_color = cv2.cvtColor(hsv, cv2.COLOR_HSV2BGR)
+        return flow_color
 
 
 class TransferCubeTask(BimanualViperXTask):
